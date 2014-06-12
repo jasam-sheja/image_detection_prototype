@@ -9,7 +9,7 @@
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
@@ -40,6 +40,12 @@
             >
         </activity>
         <activity
+            android:name="com.jasam.detectionjsh.UserTakeActivity2"
+            android:label="@string/app_name" 
+            android:screenOrientation="landscape"
+            >
+        </activity>
+        <activity
             android:name="com.jasam.detectionjsh.MemoryPhotoActivity"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
@@ -52,13 +58,19 @@
             >
         </activity>
         <activity
-            android:name="com.jasam.detectionjsh.imageProccessing.SmothingActivity"
+            android:name="com.jasam.detectionjsh.imageProccessing.ImageProccessignActivity"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             >
         </activity>
         <activity
             android:name="com.jasam.detectionjsh.imageProccessing.SmothingSubActivity"
+            android:label="@string/app_name" 
+            android:screenOrientation="landscape"
+            >
+        </activity>
+        <activity
+            android:name="com.jasam.detectionjsh.SettingsActivity"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             >

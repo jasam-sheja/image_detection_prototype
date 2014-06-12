@@ -1,13 +1,14 @@
 package com.jasam.detectionjsh;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.NativeCameraView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
@@ -34,6 +35,7 @@ import org.opencv.imgproc.Imgproc;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,6 +49,7 @@ import android.widget.Toast;
 public class UserTakeActivity extends Activity implements CvCameraViewListener2,OnTouchListener{
 
 	private static final String  TAG = "Sample::Detect::Activity";
+	private Settings settings;
 	
 	private CameraBridgeVeiwCustom mOpenCvCameraView;
 	private List<Size> mResolutionList;
@@ -82,6 +85,9 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
                     super.onManagerConnected(status);
                 } break;
             }
+            detecet = FeatureDetector.create(FeatureDetector.ORB);
+            extractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
+            matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
         }
     };
     
@@ -99,28 +105,37 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view);
         mOpenCvCameraView.setCvCameraViewListener(this);*/
         
-        Log.d(TAG, "Creating and seting view");
+        Log.d(TAG, "Creating and setting view");
         mOpenCvCameraView = (CameraBridgeVeiwCustom) new CameraBridgeVeiwCustom(this, -1);
         setContentView(mOpenCvCameraView);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        
+        Log.i(TAG, "reading settings");
+        settings = Settings.getInstance();
+        Log.i(TAG, "blur type: "+settings.getBlurType());
+        Log.i(TAG, "blur size = "+settings.getBlurSize());
 	}
 	
 	@Override
     public void onPause()
     {
+		Log.i(TAG, "pausing");
         super.onPause();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
+        viewmatches = false;
     }
 
     @Override
     public void onResume()
     {
+    	Log.i(TAG, "resuming");
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
     }
 
     public void onDestroy() {
+    	Log.i(TAG, "destroying");
         super.onDestroy();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
@@ -128,8 +143,7 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		
 		
 		mResolutionMenu = menu.addSubMenu("Resolution");
 		mResolutionList = mOpenCvCameraView.getResolutionList();
@@ -143,15 +157,14 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
                     Integer.valueOf(element.width).toString() + "x" + Integer.valueOf(element.height).toString());
             idx++;
          }
+        menu.add("Settings");
+		menu.add("Info");
 		return true;
 	}
 	
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i(TAG, "called onOptionsItemSelected; selected Group: " + item.getGroupId());
-        Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
-        
-        if (item.getGroupId() == 2)
+	public boolean onOptionsItemSelected(MenuItem item) {        
+        if (item.getTitle().toString().equalsIgnoreCase("Resolution"))
         {
             int id = item.getItemId();
             Size resolution = mResolutionList.get(id);
@@ -160,6 +173,18 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
             String caption = Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
             Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
         }
+        else if(item.getTitle().toString().equalsIgnoreCase("Settings")){
+			startActivity(new Intent(this, SettingsActivity.class));
+		}else if(item.getTitle().toString().equalsIgnoreCase("Info")){
+			String info = "";
+			if(settings.getBlurSize()>0){
+				info+="blur type: "+settings.getBlurType();
+				info+="blur size = "+settings.getBlurSize();
+			}
+			if(info.length()>0){
+				Toast.makeText(this, info, Toast.LENGTH_LONG).show();
+			}
+		}
 
         return true;
     }
@@ -181,43 +206,77 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
 		Mat img_keypoint = new Mat();
 		
 	    mGray = inputFrame.gray();
-	    Imgproc.GaussianBlur(mGray, mGray, new org.opencv.core.Size(5, 5), 0, 0);
-	    if(detecet == null) detecet = FeatureDetector.create(FeatureDetector.FAST);
-    	//FeatureDetector detecet = FeatureDetector.create(FeatureDetector.HARRIS);
+	    if(settings.isBlurActive()){
+	    	Log.d(TAG, "bluring the image");
+			if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_HOMOGENEOUS)){
+				Log.i(TAG, "blur:: using"+settings.getBlurType());
+				Imgproc.blur(mGray, mGray, new org.opencv.core.Size(settings.getBlurSize(),settings.getBlurSize()));
+			}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_GAUSSIAN)){
+				Log.i(TAG, "blur:: using"+settings.getBlurType());
+				Imgproc.GaussianBlur(mGray, mGray, new org.opencv.core.Size(settings.getBlurSize(), settings.getBlurSize()),0,0);
+			}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_MEDIAN)){
+				Log.i(TAG, "blur:: using"+settings.getBlurType());
+				Imgproc.medianBlur(mGray, mGray, settings.getBlurSize());
+			}
+	    }
+
+
     	keypoints = new MatOfKeyPoint();
     	detecet.detect(mGray, keypoints);
     	
     	if(viewmatches){    		
-    		if(extractor == null) extractor = DescriptorExtractor.create(DescriptorExtractor.BRIEF);
-	    	//DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.BRISK);
 	    	
 	    	Mat descriptors_1;
 	    	descriptors_1 = new Mat();
 	    	extractor.compute( mGray, keypoints, descriptors_1 );
 	    	
 	    	
-	    	if(matcher == null)matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
-	    	//DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 	    	MatOfDMatch matches = new MatOfDMatch();    	
-	    	matcher.match(descriptors_1, targetdescriptors, matches);
+	    	//matcher.match(descriptors_1,targetdescriptors , matches);
 	    	
 	    	//Features2d.drawMatches(mGray, keypoints, targetmGray, targetKeypoint, matches, img_keypoint);
 	    	
+	    	matcher.match(descriptors_1, matches);    	
 	    	List<DMatch> dmatches = matches.toList();
 	    	
-	    	double max_dist = 0; double min_dist = 50;
-	    	for( int i = 0; i < descriptors_1.rows(); i++ )
-	    	  { double dist = dmatches.get(i).distance;
-	    	    if( dist < min_dist ) min_dist = dist;
-	    	    if( dist > max_dist ) max_dist = dist;
-	    	  }
 	    	
+	    	//double min_dist = 1000/*,avg_dist = 0*/;
+//	    	for( int i = 0; i < dmatches.size(); i++ ){ 
+//	    		if( dmatches.get(i).distance < min_dist ) 
+//	    			min_dist = dmatches.get(i).distance;
+//	    		avg_dist += dmatches.get(i).distance;
+//			}
+	    	//Log.i(TAG, "min dist = "+min_dist);
+	    	//avg_dist/=dmatches.size();
+	    	//min_dist = Math.min(min_dist + avg_dist/9,40);
+	    	
+	    	Collections.sort(dmatches, new Comparator<DMatch>() {
+
+				@Override
+				public int compare(DMatch lhs, DMatch rhs) {
+					if(lhs.distance>rhs.distance)
+						return 1;
+					else if(lhs.distance<rhs.distance)
+						return -1;
+					else
+						return 0;
+				}
+	    		
+			});
 	    	List<DMatch> good_dmatches = new ArrayList<DMatch>();
-	    	for( int i = 0; i < descriptors_1.rows(); i++ )
-	    	  { if( dmatches.get(i).distance <= Math.max(2*min_dist, 0.02) )
-	    		  
-	    	    { good_dmatches.add(dmatches.get(i)); }
-	    	  }
+	    	if(dmatches.size()>3 && dmatches.get(3).distance<70){
+	    		good_dmatches = dmatches.subList(0, Math.max(4, dmatches.size()/10));
+	    	}
+	    	//Log.i(TAG,"matches number = "+dmatches.size());
+	    	//Log.i(TAG, "avg dist = "+avg_dist);
+	    	//Log.i(TAG, "requir dist = "+min_dist);
+	    	
+//	    	for( int i = 0; i < dmatches.size(); i++ ){ 
+//	    		if( dmatches.get(i).distance <= min_dist )
+//	    		{ good_dmatches.add(dmatches.get(i)); }
+//	    	}
+//	    	Log.i(TAG,"good matches number = "+good_dmatches.size());
+	    	
 	    	
 	    	/*if(good_dmatches.size()<(int)(targetKeypoint.toList().size()*0.9)){
 	    		return inputFrame.rgba();
@@ -292,13 +351,15 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
 		        targetKeypoint = keypoints;
 		        targetdescriptors = new Mat();
 		        extractor.compute( targetmGray, targetKeypoint, targetdescriptors );
-		        
+		        List<Mat> descriptors = new ArrayList<Mat>();
+		        descriptors.add(targetdescriptors);
+		        matcher.clear();
+		        matcher.add(descriptors);
+		        matcher.train();
         	}catch(NullPointerException e){
-        		if(detecet == null)
-        			detecet = FeatureDetector.create(FeatureDetector.FAST);
-        		else if(extractor == null)
-        			extractor = DescriptorExtractor.create(DescriptorExtractor.BRIEF);
         		viewmatches = false;
+        		Log.e(TAG, "fail to track");
+        		Toast.makeText(this, "fail", Toast.LENGTH_SHORT);
         		return false;
         	}
         	Toast.makeText(this, " target frame saved", Toast.LENGTH_SHORT).show();

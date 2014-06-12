@@ -33,11 +33,11 @@
         android:layout_height="match_parent" >
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/settings_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.42"
-            android:text="Button" />
+            android:text="settings" />
 
         <Button
             android:id="@+id/button6"

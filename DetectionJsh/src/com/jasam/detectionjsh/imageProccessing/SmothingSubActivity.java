@@ -8,22 +8,31 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
 
 import com.jasam.detectionjsh.CameraBridgeVeiwCustom;
+import com.jasam.detectionjsh.Settings;
+import com.jasam.detectionjsh.SettingsActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class SmothingSubActivity extends Activity implements CvCameraViewListener2,OnTouchListener {
 
 	private static final String  TAG = "Sample::Detect::Activity";
+	private Settings settings;
+	
 	
 	private CameraBridgeVeiwCustom mOpenCvCameraView;
 	
@@ -62,6 +71,23 @@ public class SmothingSubActivity extends Activity implements CvCameraViewListene
         setContentView(mOpenCvCameraView);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.setOnTouchListener(this);
+        
+        settings = Settings.getInstance();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add("Settings");
+		
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if(item.getTitle().toString().equalsIgnoreCase("Settings")){
+			startActivity(new Intent(this, SettingsActivity.class));
+		}
+		return true;
 	}
 	
 	@Override
@@ -99,22 +125,22 @@ public class SmothingSubActivity extends Activity implements CvCameraViewListene
 
 	@Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-		if(smothing){
+		if(smothing && settings.isBlurActive()){
 			mRGB = inputFrame.rgba();
 			targetmRGB = new Mat(mRGB.rows(), mRGB.cols(), mRGB.type());
-			if(getIntent().getStringExtra("blur").equalsIgnoreCase("homogeneous")){
-				Imgproc.blur(mRGB, targetmRGB, new org.opencv.core.Size(5, 5));
-			}else if(getIntent().getStringExtra("blur").equalsIgnoreCase("gaussian")){
-				Imgproc.GaussianBlur(mRGB, targetmRGB, new org.opencv.core.Size(5, 5),0,0);
-			}else if(getIntent().getStringExtra("blur").equalsIgnoreCase("median")){
-				Imgproc.medianBlur(mRGB, targetmRGB, 5);
-			}else if(getIntent().getStringExtra("blur").equalsIgnoreCase("bilateral")){
-				
-				Mat temp = new Mat(mRGB.rows(), mRGB.cols(), CvType.CV_8UC3);
-				mRGB.convertTo(temp, CvType.CV_8UC3);
-				targetmRGB = new Mat(temp.rows(), temp.cols(), temp.type());
-				Imgproc.bilateralFilter(temp, targetmRGB, 5,10,2);
+			if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_HOMOGENEOUS)){
+				Imgproc.blur(mRGB, targetmRGB, new org.opencv.core.Size(settings.getBlurSize(),settings.getBlurSize()));
+			}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_GAUSSIAN)){
+				Imgproc.GaussianBlur(mRGB, targetmRGB, new org.opencv.core.Size(settings.getBlurSize(), settings.getBlurSize()),0,0);
+			}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_MEDIAN)){
+				Imgproc.medianBlur(mRGB, targetmRGB, settings.getBlurSize());
 			}
+//			else if(settings.getBlurType().equalsIgnoreCase("bilateral")){				
+//				Mat temp = new Mat(mRGB.rows(), mRGB.cols(), CvType.CV_8UC3);
+//				mRGB.convertTo(temp, CvType.CV_8UC3);
+//				targetmRGB = new Mat(temp.rows(), temp.cols(), temp.type());
+//				Imgproc.bilateralFilter(temp, targetmRGB, 5,10,2);
+//			}
 			
 			return targetmRGB;
 		}
