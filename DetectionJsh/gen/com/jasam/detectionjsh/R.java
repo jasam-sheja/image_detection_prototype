@@ -48,30 +48,34 @@ containing a value of this type.
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
+        public static final int logo=0x7f020001;
     }
     public static final class id {
-        public static final int Go_button=0x7f04000e;
-        public static final int action_settings=0x7f040015;
+        public static final int Bilateral_Filter=0x7f040016;
+        public static final int Gaussian_blur=0x7f040014;
+        public static final int Go_button=0x7f04000b;
+        public static final int Homogeneous_blur=0x7f040013;
+        public static final int Median_blur=0x7f040015;
+        public static final int action_settings=0x7f040018;
         public static final int any=0x7f040000;
         public static final int back=0x7f040001;
-        public static final int button4=0x7f040006;
-        public static final int button6=0x7f040008;
-        public static final int folder_editText=0x7f04000b;
-        public static final int from_sdcard=0x7f040009;
+        public static final int etxtPassword=0x7f040005;
+        public static final int etxtUsername=0x7f040004;
+        public static final int folder_editText=0x7f040008;
+        public static final int from_sdcard=0x7f040006;
         public static final int front=0x7f040002;
-        public static final int image_editText=0x7f04000d;
-        public static final int image_processing=0x7f040005;
-        public static final int listView=0x7f04000f;
-        public static final int memory_photo_button=0x7f040004;
-        public static final int row_editText=0x7f040011;
-        public static final int row_seekBar=0x7f040010;
-        public static final int row_spinner=0x7f040012;
-        public static final int row_textView=0x7f04000a;
-        public static final int settings_button=0x7f040007;
-        public static final int settings_row2_textView=0x7f040014;
-        public static final int settings_row_linearlayout=0x7f040013;
-        public static final int textView2=0x7f04000c;
-        public static final int user_define_photo_button=0x7f040003;
+        public static final int go_smothing=0x7f040017;
+        public static final int image_editText=0x7f04000a;
+        public static final int imgLogo=0x7f040003;
+        public static final int listView=0x7f04000c;
+        public static final int radioGroup1=0x7f040012;
+        public static final int row_editText=0x7f04000e;
+        public static final int row_seekBar=0x7f04000d;
+        public static final int row_spinner=0x7f04000f;
+        public static final int row_textView=0x7f040007;
+        public static final int settings_row2_textView=0x7f040011;
+        public static final int settings_row_linearlayout=0x7f040010;
+        public static final int textView2=0x7f040009;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -79,6 +83,7 @@ containing a value of this type.
         public static final int settings_layout=0x7f030002;
         public static final int settings_row=0x7f030003;
         public static final int settings_row_2=0x7f030004;
+        public static final int smothing_layout=0x7f030005;
     }
     public static final class menu {
         public static final int main=0x7f080000;
@@ -86,7 +91,11 @@ containing a value of this type.
     public static final class string {
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
+        public static final int btnLogin=0x7f060004;
+        public static final int etxtPassword=0x7f060006;
+        public static final int etxtUsername=0x7f060005;
         public static final int hello_world=0x7f060002;
+        public static final int logoDesc=0x7f060003;
     }
     public static final class style {
         /** 
@@ -153,7 +162,7 @@ containing a value of this type.
 <tr><td><code>back</code></td><td>99</td><td></td></tr>
 <tr><td><code>front</code></td><td>98</td><td></td></tr>
 </table>
-          @attr name android:camera_id
+          @attr name com.jasam.detectionjsh:camera_id
         */
         public static final int CameraBridgeViewBase_camera_id = 1;
         /**
@@ -167,7 +176,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:show_fps
+          @attr name com.jasam.detectionjsh:show_fps
         */
         public static final int CameraBridgeViewBase_show_fps = 0;
     };

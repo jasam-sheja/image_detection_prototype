@@ -4,5 +4,9 @@
     <string name="app_name">Detection jsh</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="logoDesc">Virtual Sticky Notes Logo</string>
+    <string name="btnLogin">Login</string>
+    <string name="etxtUsername">Username</string>
+    <string name="etxtPassword">Password</string>
 
 </resources>
