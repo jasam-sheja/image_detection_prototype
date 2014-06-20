@@ -8,12 +8,10 @@
         android:id="@+id/imgLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
         android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/logoDesc"
         android:src="@drawable/logo" />
-
     <EditText
         android:id="@+id/etxtUsername"
         android:layout_width="fill_parent"
@@ -31,6 +29,7 @@
         android:layout_below="@id/etxtUsername"
         />
     <Button
+        android:id="@+id/btnLogin"
         android:layout_width="96dp"
         android:layout_height="wrap_content"
         android:text="@string/btnLogin"
