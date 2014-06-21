@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.jasam.detectionjsh.CameraBridgeVeiwCustom
+        android:id="@+id/test_javaCameraView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.91" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/test_load_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="load" />
+
+        <Button
+            android:id="@+id/test_next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="next" />
+
+        <Button
+            android:id="@+id/test_prev_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="prev" />
+    </LinearLayout>
+
+</LinearLayout>
