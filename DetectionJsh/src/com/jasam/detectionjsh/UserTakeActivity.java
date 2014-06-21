@@ -351,6 +351,9 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
 		        targetKeypoint = keypoints;
 		        targetdescriptors = new Mat();
 		        extractor.compute( targetmGray, targetKeypoint, targetdescriptors );
+		        if(targetdescriptors.rows() == 0 || targetdescriptors.cols() == 0 || targetdescriptors.type() != CvType.CV_8U){
+		        	throw new NullPointerException();
+		        }
 		        List<Mat> descriptors = new ArrayList<Mat>();
 		        descriptors.add(targetdescriptors);
 		        matcher.clear();

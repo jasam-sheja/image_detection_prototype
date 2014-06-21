@@ -1,23 +1,15 @@
 package com.jasam.detectionjsh;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import android.R.layout;
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
-import android.content.ClipData.Item;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.os.Environment;
-import android.text.InputFilter.LengthFilter;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
@@ -25,11 +17,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
@@ -45,7 +33,7 @@ public class SettingsActivity extends ListActivity {
 		String[] objs = new String[]{"blur","blur size",
 				"detector",
 				"extractor",
-				"matcher","Min Dist Matching",
+				"matcher","Min Dist Matching","Min Matches",
 				"Save"};
 		getListView().setAdapter(new mylistadapter(this, objs));
 		
@@ -53,7 +41,9 @@ public class SettingsActivity extends ListActivity {
 	}
 	
 	
+	//section
 	
+	//end
 	private static class mylistadapter extends ArrayAdapter<String>{
 
 		public mylistadapter(Context context, String[] objects) {
@@ -83,10 +73,7 @@ public class SettingsActivity extends ListActivity {
 					}
 
 					@Override
-					public void onNothingSelected(AdapterView<?> parent) {
-						// TODO Auto-generated method stub
-						
-					}
+					public void onNothingSelected(AdapterView<?> parent) {}
 				});
 				ll.addView(sp);
 			}else if(getItem(position).equals("blur size")){
@@ -109,7 +96,6 @@ public class SettingsActivity extends ListActivity {
 					
 					@Override
 					public void onStartTrackingTouch(SeekBar seekBar) {
-						// TODO Auto-generated method stub
 						
 					}
 					
@@ -142,7 +128,6 @@ public class SettingsActivity extends ListActivity {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> parent) {
-						// TODO Auto-generated method stub
 						
 					}
 				});
@@ -161,7 +146,6 @@ public class SettingsActivity extends ListActivity {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> parent) {
-						// TODO Auto-generated method stub
 						
 					}
 				});
@@ -181,7 +165,6 @@ public class SettingsActivity extends ListActivity {
 
 					@Override
 					public void onNothingSelected(AdapterView<?> parent) {
-						// TODO Auto-generated method stub
 						
 					}
 				});
@@ -206,7 +189,6 @@ public class SettingsActivity extends ListActivity {
 					
 					@Override
 					public void onStartTrackingTouch(SeekBar seekBar) {
-						// TODO Auto-generated method stub
 						
 					}
 					
@@ -225,6 +207,72 @@ public class SettingsActivity extends ListActivity {
 				lli.addView(prog);
 				
 				ll.addView(lli);
+			}else if(getItem(position).equals("Min Matches")){
+				View tView = inflater.inflate(R.layout.settings_min_matches_row, parent, false);
+				final TextView prog = (TextView) tView.findViewById(R.id.settings_min_matches_textView);
+				prog.setText(settings.getMinMatches()+"");
+				//prog.setLayoutParams(new LayoutParams(200, LayoutParams.WRAP_CONTENT));
+				
+				final SeekBar sb = (SeekBar) tView.findViewById(R.id.settings_min_matches_seekBar);
+				//sb.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+				sb.setMax(100);
+				sb.setProgress(settings.getMinMatches());
+				sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+					
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+						settings.setMinMatches(seekBar.getProgress());
+						seekBar.setProgress(settings.getMinMatches());
+						prog.setText(settings.getMinMatches()+"");						
+					}
+					
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						
+					}
+					
+					@Override
+					public void onProgressChanged(SeekBar seekBar, int progress,
+							boolean fromUser) {
+						prog.setText(progress+"");						
+					}
+				});
+				
+				Button tButton;
+				tButton = (Button) tView.findViewById(R.id.settings_min_matches_button_minuse);
+				tButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						sb.setProgress(sb.getProgress()-1);
+					}
+				});
+				tButton.setOnLongClickListener(new OnLongClickListener() {
+					
+					@Override
+					public boolean onLongClick(View v) {
+						sb.setProgress(sb.getProgress()-20);
+						return true;
+					}
+				});
+				tButton = (Button) tView.findViewById(R.id.settings_min_matches_button_plus);
+				tButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						sb.setProgress(sb.getProgress()+1);
+					}
+				});
+				tButton.setOnLongClickListener(new OnLongClickListener() {
+					
+					@Override
+					public boolean onLongClick(View v) {
+						sb.setProgress(sb.getProgress()+20);
+						return true;
+					}
+				});
+
+				ll.addView(tView);
 			}
 			return row;
 		}

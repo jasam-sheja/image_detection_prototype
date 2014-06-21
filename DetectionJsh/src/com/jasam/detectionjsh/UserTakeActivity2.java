@@ -3,7 +3,6 @@ package com.jasam.detectionjsh;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -11,20 +10,17 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.features2d.DMatch;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
-import org.opencv.features2d.Features2d;
 import org.opencv.features2d.KeyPoint;
 import org.opencv.imgproc.Imgproc;
 
@@ -79,6 +75,24 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
             detecet = FeatureDetector.create(settings.getDetector());
             extractor = DescriptorExtractor.create(settings.getExtractor());
             matcher = DescriptorMatcher.create(settings.getMatcher());
+            Settings.addObserver(new SettingsAdapter(){
+
+				@Override
+				public void onDetectorChanged(int oldtDetector) {
+					detecet = FeatureDetector.create(settings.getDetector());
+				}
+
+				@Override
+				public void onExtractorChanged(int oldExtractor) {
+					extractor = DescriptorExtractor.create(settings.getExtractor());
+				}
+
+				@Override
+				public void onMatcherChanged(int oldExtracot) {
+					matcher = DescriptorMatcher.create(settings.getMatcher());
+				}
+            	
+            });
         }
     };
 
@@ -125,7 +139,6 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         menu.add("Settings");
-		menu.add("Info");
 		return true;
 	}
 
@@ -133,29 +146,17 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
 	public boolean onOptionsItemSelected(MenuItem item) {        
         if(item.getTitle().toString().equalsIgnoreCase("Settings")){
 			startActivity(new Intent(this, SettingsActivity.class));
-		}else if(item.getTitle().toString().equalsIgnoreCase("Info")){
-			String info = "";
-			if(settings.getBlurSize()>0){
-				info+="blur type: "+settings.getBlurType();
-				info+="blur size = "+settings.getBlurSize();
-			}
-			if(info.length()>0){
-				Toast.makeText(this, info, Toast.LENGTH_LONG).show();
-			}
 		}
-
         return true;
     }
     
     @Override
 	public void onCameraViewStarted(int width, int height) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onCameraViewStopped() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -190,7 +191,7 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
 		List<DMatch> goodDMatches = new ArrayList<DMatch>();;
 		if(!Double.isInfinite(avg)){
     		for(int i=0;i<p.length;++i){
-    			if(Math.abs(avg-p[i])<Math.abs(avg/7)){
+    			if(Math.abs(avg-p[i])<Math.abs(avg/6)){
     				goodDMatches.add(matches.get(i));
     				Log.i(TAG, "add p["+i+"] = "+p[i]);
     			}else{
@@ -209,7 +210,8 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
 	
 	@Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-		Mat img_keypoint = new Mat();
+		boolean detected = false;
+		Mat img_keypoint = inputFrame.rgba().clone();
 		
 	    mGray = inputFrame.gray();
 	    if(settings.isBlurActive()){
@@ -221,6 +223,7 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
     	mKeypoints = new MatOfKeyPoint();
     	detecet.detect(mGray, mKeypoints);
     	
+    	
     	if(viewmatches){    
     		Mat mDescriptors = null;
 	    	try{	    	
@@ -228,8 +231,9 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
 		    	extractor.compute( mGray, mKeypoints, mDescriptors );		    	
 		    	
 		    	MatOfDMatch matches = new MatOfDMatch();    		    	
-		    	matcher.match(mDescriptors, matches);    	
+		    	matcher.match(mDescriptors, matches);    		    	
 		    	List<DMatch> lmatches = matches.toList();
+		    	if(lmatches.size() <1) throw new NoMatchesException();
 		    	
 		    	Collections.sort(lmatches, new Comparator<DMatch>() {
 	
@@ -245,25 +249,82 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
 		    		
 				});
 		    	
+//		    	double[] avgdist = new double[lmatches.size()],
+//		    			mindist = new double[lmatches.size()],
+//		    			maxdist = new double[lmatches.size()] ;
+//		    	mindist[0] = lmatches.get(0).distance;
+//		    	maxdist[0] = lmatches.get(0).distance;
+//		    	avgdist[0] = lmatches.get(0).distance;
+//		    	for(int i=1;i<lmatches.size();++i){
+//		    		if(lmatches.get(i).distance<mindist[i-1]) 
+//		    			mindist[i] = lmatches.get(i).distance;
+//		    		else
+//		    			mindist[i] = mindist[i-1];
+//		    		if(lmatches.get(i).distance>maxdist[i-1])
+//		    			maxdist[i] = lmatches.get(i).distance;
+//		    		else
+//		    			maxdist[i] = maxdist[i-1];
+//		    		avgdist[i] += avgdist[i-1] + lmatches.get(i).distance;
+//		    	}
+		    	
 		    	List<KeyPoint> lKeyPoints = mKeypoints.toList(),
 		    			lTargetKeyPoints = targetKeypoint.toList();
 		    	List<DMatch> lGoodDMatches = new ArrayList<DMatch>();
 		    	
 		    	if(lmatches.size()>3 && lmatches.get(3).distance<settings.getMinDist()){
+		    		int perfect = 4;
+		    		for(;perfect<lmatches.size() && lmatches.get(perfect).distance<settings.getMinDist();++perfect){}
+		    		--perfect;
 		    		List<DMatch> good_dmatches_temp = new ArrayList<DMatch>();
-		    		good_dmatches_temp = lmatches.subList(0, Math.max(4, lmatches.size()/10));
-		    		
-		    		if(good_dmatches_temp.get(good_dmatches_temp.size()-1).distance<settings.getMinDist()){
+		    		int count ;
+		    		count = Math.min(2*settings.getMinMatches(), lmatches.size());		    		
+		    		count = Math.max(count, perfect);
+		    		good_dmatches_temp = lmatches.subList(0, count);
+		    		Log.i(TAG,"perfect matches = "+perfect+" of "+lmatches.size()+" matches, using "+good_dmatches_temp.size()+" match");
+		    		if(good_dmatches_temp.get(Math.min(good_dmatches_temp.size()-1,settings.getMinMatches())).distance<=settings.getMinDist()){
 		    			lGoodDMatches = good_dmatches_temp;
 		    		}else{	    		
 		    			lGoodDMatches = myMatcher(good_dmatches_temp, lKeyPoints, lTargetKeyPoints);
 		    		}
+		    	}	
+		    	/*boolean success = false;
+		    	for(int j=0;j<avgdist.length*0.9 && !success;j++){
+		    		if(j>0){
+		    			avgdist[j] -= avgdist[j-1];
+		    			mindist[j] = lmatches.get(j).distance;
+		    			maxdist[j] = lmatches.get(j).distance;
+		    			for(int i=j+1;i<lmatches.size();++i){
+				    		if(lmatches.get(i).distance<mindist[i-1]) 
+				    			mindist[i] = lmatches.get(i).distance;
+				    		else
+				    			mindist[i] = mindist[i-1];
+				    		if(lmatches.get(i).distance>maxdist[i-1])
+				    			maxdist[i] = lmatches.get(i).distance;
+				    		else
+				    			maxdist[i] = maxdist[i-1];
+				    	}
+		    		}
+			    	for(int i=avgdist.length-1;i>=avgdist.length*0.1 && !success;--i){
+			    		//Log.d(TAG, "statistics: mindist = "+mindist[i]+" | maxdist = "+maxdist[i]+" | avgdist = "+avgdist[i]/(avgdist.length-j)+" | points = "+(avgdist.length-j));
+				    	if(maxdist[i]-mindist[i]<10 && (maxdist[i]+mindist[i])/(avgdist[i]/(avgdist.length-j)) <2.5 && (maxdist[i]+mindist[i])/(avgdist[i]/(avgdist.length-j)) >1.5){
+				    		Log.d(TAG, "statistics: mindist = "+mindist[i]+" | maxdist = "+maxdist[i]+" | avgdist = "+avgdist[i]/(avgdist.length-j)+" | points = "+(avgdist.length-j));
+				    		lGoodDMatches = lmatches;
+				    		success = true;
+				    	}
+			    	}
 		    	}
+		    	if(!success){
+		    		lGoodDMatches = myMatcher(lmatches, lKeyPoints, lTargetKeyPoints);
+		    	}*/
+		    	
+		    	
 		    	MatOfDMatch goodDmatches = new MatOfDMatch();
 		    	goodDmatches.fromList(lGoodDMatches);
+		    	if(lGoodDMatches.size()>=settings.getMinMatches()){
+		    		detected = true;
+		    		Log.i(TAG, "image match ,detctoin success");
+		    	}
 		    	  	
-		    	
-		    	img_keypoint = inputFrame.rgba().clone();
 		    	for(int i=0;i<lGoodDMatches.size();++i){
 		    		Core.circle(img_keypoint,
 		    				lKeyPoints.get(lGoodDMatches.get(i).queryIdx).pt,
@@ -281,6 +342,8 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
 		    				new Scalar(200, 255, 25),
 		    				1);
 		    	}	   
+	    	}catch(NoMatchesException e){
+	    		//do nothing
 	    	}catch(Exception e){
 	    		e.printStackTrace();
 	    		Log.d(TAG, "mGray type : "+mGray.type());
@@ -295,15 +358,22 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
 	    		Log.d(TAG, "mGray descriptors size : "+mDescriptors.rows()+" | "+mDescriptors.cols());
 	    		Log.d(TAG, "target descriptors size : "+targetdescriptors.rows()+" | "+targetdescriptors.cols());
 	    		viewmatches = false;
+	    		Toast.makeText(this, "exception", Toast.LENGTH_SHORT).show();
 	    		return mGray;
 	    	}
     	}
     	else{
-    		img_keypoint = inputFrame.rgba().clone();
     		List<KeyPoint> keyPoints = mKeypoints.toList();
     		for(int i=0;i<keyPoints.size();++i){
     			Core.circle(img_keypoint,keyPoints.get(i).pt,(int)mGray.size().width/150,new Scalar(255, 25, 200), 2);
     		}
+    	}
+    	if(viewmatches && detected){
+    		Core.circle(img_keypoint, new Point(img_keypoint.width()/circuleScaler, img_keypoint.height()/circuleScaler), (int)Math.min(img_keypoint.width()/(circuleScaler*0.9), img_keypoint.height()/(circuleScaler*0.9)), new Scalar(0, 255, 1), -1);
+    	}else if(viewmatches && !detected){
+    		Core.circle(img_keypoint, new Point(img_keypoint.width()/circuleScaler, img_keypoint.height()/circuleScaler), (int)Math.min(img_keypoint.width()/(circuleScaler*0.9), img_keypoint.height()/(circuleScaler*0.9)), new Scalar(255, 0, 1), -1);
+    	}else{
+    		Core.circle(img_keypoint, new Point(img_keypoint.width()/circuleScaler, img_keypoint.height()/circuleScaler), (int)Math.min(img_keypoint.width()/(circuleScaler*0.9), img_keypoint.height()/(circuleScaler*0.9)), new Scalar(255, 150, 50), -1);
     	}
     	org.opencv.core.Size previewsize = new org.opencv.core.Size();
     	previewsize.height = mOpenCvCameraView.getResolution().height;
@@ -312,34 +382,57 @@ public class UserTakeActivity2 extends Activity implements CvCameraViewListener2
     	return img_keypoint;
 	}
 	
+	private final double circuleScaler = 80;
+	
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.i(TAG,"onTouch event");
-        viewmatches = !viewmatches;
-        Log.i(TAG,"onTouch event" + viewmatches);
-        if(viewmatches){
-        	try{
-        		targetmGray = mGray.clone();
-		        targetKeypoint = mKeypoints;
-		        targetdescriptors = new Mat();
-		        extractor.compute( targetmGray, targetKeypoint, targetdescriptors );
-		        List<Mat> descriptors = new ArrayList<Mat>();
-		        descriptors.add(targetdescriptors);
-		        matcher.clear();
-		        matcher.add(descriptors);
-		        matcher.train();
-        	}catch(NullPointerException e){
-        		viewmatches = false;
-        		Log.e(TAG, "fail to track");
-        		Toast.makeText(this, "fail", Toast.LENGTH_SHORT);
-        		return false;
-        	}
-        	Toast.makeText(this, " target frame saved", Toast.LENGTH_SHORT).show();
-        }else{
-        	Toast.makeText(this, " reset trarget", Toast.LENGTH_SHORT).show();
-        }
+    	Log.d(TAG, "motion event : "+event.getActionMasked());
+    	switch(event.getActionMasked()){
+	    	case MotionEvent.ACTION_DOWN:
+		        Log.i(TAG,"onTouch event");
+		        viewmatches = !viewmatches;
+		        Log.i(TAG,"onTouch event" + viewmatches);
+		        if(viewmatches){
+		        	try{
+		        		targetmGray = mGray.clone();
+				        targetKeypoint = mKeypoints;
+				        targetdescriptors = new Mat();
+				        extractor.compute( targetmGray, targetKeypoint, targetdescriptors );
+				        if(targetdescriptors.rows() == 0 || targetdescriptors.cols() == 0 || targetdescriptors.type() != CvType.CV_8U){
+				        	throw new NullPointerException();
+				        }
+				        List<Mat> descriptors = new ArrayList<Mat>();
+				        descriptors.add(targetdescriptors);
+				        matcher.clear();
+				        matcher.add(descriptors);
+				        matcher.train();
+		        	}catch(NullPointerException e){
+		        		viewmatches = false;
+		        		Log.e(TAG, "fail to track");
+		        		e.printStackTrace();
+		        		Toast.makeText(this, "fail", Toast.LENGTH_SHORT);
+		        		return false;
+		        	}
+		        	Toast.makeText(this, " target frame saved", Toast.LENGTH_SHORT).show();
+		        }else{
+		        	Toast.makeText(this, " reset trarget", Toast.LENGTH_SHORT).show();
+		        }
+		        break;
+	        default:
+	        	break;
+    	}
         
         return false;
     }
 
+}
+
+
+class NoMatchesException extends Exception{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1356609143534106165L;
+	//TODO extend throwable
 }

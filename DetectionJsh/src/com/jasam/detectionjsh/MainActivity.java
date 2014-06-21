@@ -1,16 +1,11 @@
 package com.jasam.detectionjsh;
 
-import java.util.Dictionary;
-
 import com.jasam.detectionjsh.imageProccessing.ImageProccessignActivity;
-import com.jasam.detectionjsh.imageProccessing.SmothingSubActivity;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,9 +16,13 @@ public class MainActivity extends ListActivity {
 	final String[] activitys;
 	
 	public MainActivity(){
-		activitys = new String[]{"User Camera Photo Take","User Camera Photo Take 2",
+		activitys = new String[]{"User Camera Photo Take",
+								"User Camera Photo Take 2",
+								"User Camera Photo Take 3",
+								"User Camera Photo Take 4",
 								"Hard photo memory",
 								"Image proccessing",
+								"test layout",
 								"Settings"};
 	}
 
@@ -47,6 +46,12 @@ public class MainActivity extends ListActivity {
 				}else if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("User Camera Photo Take 2")){
 					Intent intent = new Intent(MainActivity.this, UserTakeActivity2.class);
 					startActivity(intent);
+				}else if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("User Camera Photo Take 3")){
+					Intent intent = new Intent(MainActivity.this, UserTakeActivity3.class);
+					startActivity(intent);
+				}else if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("User Camera Photo Take 4")){
+					Intent intent = new Intent(MainActivity.this, UserTakeActivity4Chose.class);
+					startActivity(intent);
 				}else if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("Hard photo memory")){
 					Intent intent = new Intent(MainActivity.this, MemoryPhotoActivity.class);
 					startActivity(intent);
@@ -55,6 +60,9 @@ public class MainActivity extends ListActivity {
 					startActivity(intent);	
 				}else if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("Settings")){
 					Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+					startActivity(intent);
+				}else if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("test layout")){
+					Intent intent = new Intent(MainActivity.this, TestLayout.class);
 					startActivity(intent);
 				}
 				
