@@ -1,35 +1,36 @@
 package com.jasam.detectionjsh;
 
-import java.util.Dictionary;
+import com.vsn.auth.SessionManager;
 
-import com.jasam.detectionjsh.imageProccessing.ImageProccessignActivity;
-import com.jasam.detectionjsh.imageProccessing.SmothingSubActivity;
-
-import android.app.ActionBar;
+import android.*;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends Activity {
-
+	public static final String TAG = "VSN::MainActivity";
+	public SessionManager sessionManager;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);		
+		super.onCreate(savedInstanceState);
+		// Change layout to activity_main
 		setContentView(R.layout.activity_main);
 		
+		// Set session manager
+		this.sessionManager = new SessionManager(getApplicationContext());
+		
+		// Adding OnClickListener to login button
 		((Button) findViewById(R.id.btnLogin)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				// Getting username from text field etxtUsername
 				String username = ((EditText) findViewById(R.id.etxtUsername)).getText().toString();
+				// Getting username from text field etxtPassword
 				String password = ((EditText) findViewById(R.id.etxtPassword)).getText().toString();
 				/*
 				 * Authenticator auth = new Authenticator(username,password);
@@ -37,8 +38,15 @@ public class MainActivity extends Activity {
 				 * startActivity(intent);
 				 * }
 				 */
-				Intent intent = new Intent(MainActivity.this, UserTakeActivity.class);
-				startActivity(intent);
+				if (username.equals("Ammar") && password.equals("toto")) {
+					sessionManager.createLoginSession(username, password);
+					AlertDialog a = new AlertDialog.Builder(MainActivity.this).create();
+					a.setTitle("Session Manager Data");
+					a.setMessage(sessionManager.getUserDetails().toString());
+					a.show();
+					//Intent intent = new Intent(MainActivity.this, UserTakeActivity.class);
+					//startActivity(intent);
+				}				
 			}
 		});
 	}
