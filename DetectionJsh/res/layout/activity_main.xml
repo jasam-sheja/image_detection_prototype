@@ -28,12 +28,22 @@
         android:text="@string/etxtPassword"
         android:layout_below="@id/etxtUsername"
         />
+
+    <CheckBox
+        android:id="@+id/chkBoxRememberMe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/chkBoxRememberMe"
+        android:layout_below="@id/etxtPassword"
+        android:layout_alignParentLeft="true"
+        />
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="96dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="@string/btnLogin"
-        android:layout_below="@id/etxtPassword"
+        android:layout_below="@id/chkBoxRememberMe"
         android:layout_centerHorizontal="true"
         />
 </RelativeLayout>

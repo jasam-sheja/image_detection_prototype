@@ -51,32 +51,33 @@ containing a value of this type.
         public static final int logo=0x7f020001;
     }
     public static final class id {
-        public static final int Bilateral_Filter=0x7f040017;
-        public static final int Gaussian_blur=0x7f040015;
-        public static final int Go_button=0x7f04000c;
-        public static final int Homogeneous_blur=0x7f040014;
-        public static final int Median_blur=0x7f040016;
-        public static final int action_settings=0x7f040019;
+        public static final int Bilateral_Filter=0x7f040018;
+        public static final int Gaussian_blur=0x7f040016;
+        public static final int Go_button=0x7f04000d;
+        public static final int Homogeneous_blur=0x7f040015;
+        public static final int Median_blur=0x7f040017;
+        public static final int action_settings=0x7f04001a;
         public static final int any=0x7f040000;
         public static final int back=0x7f040001;
-        public static final int btnLogin=0x7f040006;
+        public static final int btnLogin=0x7f040007;
+        public static final int chkBoxRememberMe=0x7f040006;
         public static final int etxtPassword=0x7f040005;
         public static final int etxtUsername=0x7f040004;
-        public static final int folder_editText=0x7f040009;
-        public static final int from_sdcard=0x7f040007;
+        public static final int folder_editText=0x7f04000a;
+        public static final int from_sdcard=0x7f040008;
         public static final int front=0x7f040002;
-        public static final int go_smothing=0x7f040018;
-        public static final int image_editText=0x7f04000b;
+        public static final int go_smothing=0x7f040019;
+        public static final int image_editText=0x7f04000c;
         public static final int imgLogo=0x7f040003;
-        public static final int listView=0x7f04000d;
-        public static final int radioGroup1=0x7f040013;
-        public static final int row_editText=0x7f04000f;
-        public static final int row_seekBar=0x7f04000e;
-        public static final int row_spinner=0x7f040010;
-        public static final int row_textView=0x7f040008;
-        public static final int settings_row2_textView=0x7f040012;
-        public static final int settings_row_linearlayout=0x7f040011;
-        public static final int textView2=0x7f04000a;
+        public static final int listView=0x7f04000e;
+        public static final int radioGroup1=0x7f040014;
+        public static final int row_editText=0x7f040010;
+        public static final int row_seekBar=0x7f04000f;
+        public static final int row_spinner=0x7f040011;
+        public static final int row_textView=0x7f040009;
+        public static final int settings_row2_textView=0x7f040013;
+        public static final int settings_row_linearlayout=0x7f040012;
+        public static final int textView2=0x7f04000b;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -93,6 +94,7 @@ containing a value of this type.
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
         public static final int btnLogin=0x7f060004;
+        public static final int chkBoxRememberMe=0x7f060007;
         public static final int etxtPassword=0x7f060006;
         public static final int etxtUsername=0x7f060005;
         public static final int hello_world=0x7f060002;

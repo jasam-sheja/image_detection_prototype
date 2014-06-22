@@ -8,5 +8,6 @@
     <string name="btnLogin">Login</string>
     <string name="etxtUsername">Username</string>
     <string name="etxtPassword">Password</string>
+    <string name="chkBoxRememberMe">Remember Me</string>
 
 </resources>
