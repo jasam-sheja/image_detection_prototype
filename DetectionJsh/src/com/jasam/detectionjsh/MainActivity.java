@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
 	private static EditText etxtUsername, etxtPassword;
 	private static final String loginURL = "/login";
 	public SessionManager sessionManager;
-	public Authorizator authenticator;
+	public Authorizator authorizator;
 	public Token token;
 	
 	@Override
@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
 		this.sessionManager = new SessionManager(getApplicationContext());
 		
 		// Authenticator
-		this.authenticator = new Authorizator(
+		this.authorizator = new Authorizator(
 				sessionManager.getUserDetails().get(SessionManager.KEY_TOKEN),
 				sessionManager.getUserDetails().get(SessionManager.KEY_TOKEN_SECRET),
 				TwitterApi.SSL.class
@@ -65,30 +65,30 @@ public class MainActivity extends Activity {
 				// Getting username from text field etxtPassword
 				String password = etxtPassword.getText().toString();
 				
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authenticator.getAuthenticationUrl()));
-				startActivity(browserIntent);
-				
-				AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-				alert.setTitle("Authorization");
-				alert.setMessage("Enter authorization code");
+				if (authorizator.getToken() == null) {
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizator.getAuthenticationUrl()));
+					startActivity(browserIntent);					
+					AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+					alert.setTitle("Authorization");
+					alert.setMessage("Enter authorization code");
 
-				// Set an EditText view to get user input 
-				final EditText input = new EditText(MainActivity.this);
-				alert.setView(input);
+					// Set an EditText view to get user input 
+					final EditText input = new EditText(MainActivity.this);
+					alert.setView(input);
+					alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							authorizator.createToken(input.getText().toString());
+							}
+						});
+					alert.show();
+				}
 
-				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						authenticator.createToken(input.getText().toString());
-						}
-					});
-				alert.show();
-				
 				try {
-					if (authenticator.sendRequest(Verb.POST, new URL(loginURL))!= null) {
+					if (authorizator.sendRequest(Verb.POST, new URL(loginURL))!= null) {
 						if (((CheckBox) findViewById(R.id.chkBoxRememberMe)).isChecked()) {
 							sessionManager.createLoginSession(username, password,
-									authenticator.getToken().getToken(),
-									authenticator.getToken().getSecret());
+									authorizator.getToken().getToken(),
+									authorizator.getToken().getSecret());
 						}
 						Intent intent = new Intent(MainActivity.this, UserTakeActivity.class);
 						startActivity(intent);

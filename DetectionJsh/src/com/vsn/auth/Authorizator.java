@@ -15,7 +15,7 @@ public class Authorizator {
 	private final String apiKey = "GX7Ul3i8riaOg5KZESDcu3Gw6";
 	private final String apiSecret = "xHYjrX4tXzQJ4hCUewkGysMV1EcABR2MKCqO02IM1sanDNLxPD";
 	private final String baseURL = "https://api.twitter.com";
-	private Token token;
+	private Token token = null;
 	private OAuthService service;
 	public Authorizator(String token, String tokenSecret, Class<? extends Api> provider){
 		if (token != null){
