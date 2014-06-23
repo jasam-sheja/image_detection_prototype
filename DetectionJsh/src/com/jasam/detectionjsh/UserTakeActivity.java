@@ -49,7 +49,7 @@ import android.widget.Toast;
 
 public class UserTakeActivity extends Activity implements CvCameraViewListener2,OnTouchListener{
 
-	private static final String  TAG = "Sample::Detect::Activity";
+	private static final String  TAG = "VSN::Camera";
 	private Settings settings;
 	
 	private CameraBridgeVeiwCustom mOpenCvCameraView;
@@ -96,7 +96,9 @@ public class UserTakeActivity extends Activity implements CvCameraViewListener2,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().getDecorView()
+        .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         /*Log.d(TAG, "Creating and seting view");
         
         setContentView(R.id.activity_surface_view);
