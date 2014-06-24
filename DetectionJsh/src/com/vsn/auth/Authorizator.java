@@ -17,37 +17,42 @@ public class Authorizator {
 	private final String baseURL = "https://api.twitter.com";
 	private Token token = null;
 	private OAuthService service;
-	public Authorizator(String token, String tokenSecret, Class<? extends Api> provider){
-		if (token != null && tokenSecret != null){
-			this.token = new Token(token,tokenSecret);
+
+	public Authorizator(String token, String tokenSecret,
+			Class<? extends Api> provider) {
+		if (token != null && tokenSecret != null) {
+			this.token = new Token(token, tokenSecret);
 		}
-		this.service = new ServiceBuilder()
-		.provider(provider)
-        .apiKey(apiKey)
-        .apiSecret(apiSecret)
-        .build();
+		this.service = new ServiceBuilder().provider(provider).apiKey(apiKey)
+				.apiSecret(apiSecret).build();
 	}
-	public Token getToken(){
+
+	public Token getToken() {
 		return this.token;
 	}
-	public String getAuthenticationUrl(){
-		// Send username and password in post request to the authorization url to get the access token directly
+
+	public String getAuthenticationUrl() {
+		// Send username and password in post request to the authorization url
+		// to get the access token directly
 		Token requestToken = null;
 		try {
 			requestToken = service.getRequestToken();
-		} catch (Exception e){
+		} catch (Exception e) {
 			if (requestToken == null)
 				throw new NullPointerException();
 			return null;
 		}
 		return service.getAuthorizationUrl(requestToken);
-		//return this.service.getAuthorizationUrl(this.service.getRequestToken());
+		// return
+		// this.service.getAuthorizationUrl(this.service.getRequestToken());
 	}
-	public void createToken(String verificationCode){
-		this.token = this.service.getAccessToken(this.service.getRequestToken(), new Verifier(verificationCode));
+
+	public void createToken(String verificationCode) {
+		this.token = this.service.getAccessToken(
+				this.service.getRequestToken(), new Verifier(verificationCode));
 	}
-	public Response sendRequest(Verb verb, URL apiUrl)
-	{
+
+	public Response sendRequest(Verb verb, URL apiUrl) {
 		OAuthRequest request = new OAuthRequest(verb, baseURL + apiUrl);
 		this.service.signRequest(token, request);
 		return request.send();
