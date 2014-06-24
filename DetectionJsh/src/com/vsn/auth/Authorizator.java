@@ -18,7 +18,7 @@ public class Authorizator {
 	private Token token = null;
 	private OAuthService service;
 	public Authorizator(String token, String tokenSecret, Class<? extends Api> provider){
-		if (token != null){
+		if (token != null && tokenSecret != null){
 			this.token = new Token(token,tokenSecret);
 		}
 		this.service = new ServiceBuilder()
