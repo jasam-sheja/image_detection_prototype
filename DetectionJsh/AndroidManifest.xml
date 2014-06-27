@@ -62,6 +62,12 @@
             >
         </activity>
         <activity
+            android:name="com.jasam.detectionjsh.UserTakeActivity5"
+            android:label="@string/app_name" 
+            android:screenOrientation="landscape"
+            >
+        </activity>
+        <activity
             android:name="com.jasam.detectionjsh.MemoryPhotoActivity"
             android:label="@string/app_name" 
             >

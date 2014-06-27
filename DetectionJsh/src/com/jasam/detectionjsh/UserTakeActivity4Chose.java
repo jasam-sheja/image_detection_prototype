@@ -17,7 +17,7 @@ import android.widget.ImageView;
 
 public class UserTakeActivity4Chose extends Activity {
 
-	private static final String  TAG = "User Take Activity 4 Chose";
+	//private static final String  TAG = "User Take Activity 4 Chose";
 	
 	private final int RESULT_LOAD_IMAGE = 1;
 	
@@ -93,6 +93,18 @@ public class UserTakeActivity4Chose extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent  = new Intent(UserTakeActivity4Chose.this, UserTakeActivity4.class);
+				intent.putStringArrayListExtra("images", selected);
+				
+				startActivity(intent);
+			}
+		});
+		
+		b = (ImageButton) findViewById(R.id.user_take_detect_5_imageButton);
+		b.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent  = new Intent(UserTakeActivity4Chose.this, UserTakeActivity5.class);
 				intent.putStringArrayListExtra("images", selected);
 				
 				startActivity(intent);
