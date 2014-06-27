@@ -53,7 +53,7 @@ containing a value of this type.
     }
     public static final class id {
         public static final int Go_button=0x7f04000e;
-        public static final int action_settings=0x7f040024;
+        public static final int action_settings=0x7f040025;
         public static final int any=0x7f040000;
         public static final int back=0x7f040001;
         public static final int button4=0x7f040006;
@@ -84,11 +84,12 @@ containing a value of this type.
         public static final int test_prev_button=0x7f04001d;
         public static final int textView2=0x7f04000c;
         public static final int user_define_photo_button=0x7f040003;
-        public static final int user_take_delete_imageButton=0x7f040022;
-        public static final int user_take_detect_imageButton=0x7f040023;
-        public static final int user_take_load_imageButton=0x7f040021;
-        public static final int user_take_next_imageButton=0x7f040020;
-        public static final int user_take_prev_imageButton=0x7f04001f;
+        public static final int user_take_delete_imageButton=0x7f040023;
+        public static final int user_take_detect_5_imageButton=0x7f04001f;
+        public static final int user_take_detect_imageButton=0x7f040024;
+        public static final int user_take_load_imageButton=0x7f040022;
+        public static final int user_take_next_imageButton=0x7f040021;
+        public static final int user_take_prev_imageButton=0x7f040020;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -173,7 +174,7 @@ containing a value of this type.
 <tr><td><code>back</code></td><td>99</td><td></td></tr>
 <tr><td><code>front</code></td><td>98</td><td></td></tr>
 </table>
-          @attr name android:camera_id
+          @attr name com.jasam.detectionjsh:camera_id
         */
         public static final int CameraBridgeViewBase_camera_id = 1;
         /**
@@ -187,7 +188,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:show_fps
+          @attr name com.jasam.detectionjsh:show_fps
         */
         public static final int CameraBridgeViewBase_show_fps = 0;
     };

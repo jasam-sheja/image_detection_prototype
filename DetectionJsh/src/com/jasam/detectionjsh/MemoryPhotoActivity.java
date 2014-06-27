@@ -3,7 +3,6 @@ package com.jasam.detectionjsh;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 
 import android.app.Activity;
 import android.content.Intent;

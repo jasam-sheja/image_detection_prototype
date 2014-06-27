@@ -16,6 +16,13 @@
         android:layout_height="wrap_content" >
 
         <ImageButton
+            android:id="@+id/user_take_detect_5_imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.22"
+            android:src="@android:drawable/ic_menu_view" />
+
+        <ImageButton
             android:id="@+id/user_take_prev_imageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -9,9 +9,6 @@ import org.opencv.core.MatOfKeyPoint;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
-import org.opencv.imgproc.Imgproc;
-
-import android.util.Log;
 
 public class MyImageProccessor extends SettingsAdapter{
 	Settings settings;
@@ -37,15 +34,15 @@ public class MyImageProccessor extends SettingsAdapter{
 		matcher = DescriptorMatcher.create(settings.getMatcher());
 	}
 	
-	private void Blur(Mat gray){
-		if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_HOMOGENEOUS)){
-			Imgproc.blur(gray, gray, new org.opencv.core.Size(settings.getBlurSize(),settings.getBlurSize()));
-		}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_GAUSSIAN)){
-			Imgproc.GaussianBlur(gray, gray, new org.opencv.core.Size(settings.getBlurSize(), settings.getBlurSize()),0,0);
-		}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_MEDIAN)){
-			Imgproc.medianBlur(gray, gray, settings.getBlurSize());
-		}
-	}
+//	private void Blur(Mat gray){
+//		if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_HOMOGENEOUS)){
+//			Imgproc.blur(gray, gray, new org.opencv.core.Size(settings.getBlurSize(),settings.getBlurSize()));
+//		}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_GAUSSIAN)){
+//			Imgproc.GaussianBlur(gray, gray, new org.opencv.core.Size(settings.getBlurSize(), settings.getBlurSize()),0,0);
+//		}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_MEDIAN)){
+//			Imgproc.medianBlur(gray, gray, settings.getBlurSize());
+//		}
+//	}
 	
 	public boolean setTarget(Mat target){
 		if(target != null){

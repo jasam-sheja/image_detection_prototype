@@ -17,7 +17,8 @@ public class ImageProccessignActivity extends ListActivity {
 	final String[] activitys;
 	
 	public ImageProccessignActivity(){
-		activitys = new String[]{"blur"};
+		activitys = new String[]{"blur" ,
+								"change format"};
 	}
 	
 	@Override
@@ -32,6 +33,9 @@ public class ImageProccessignActivity extends ListActivity {
 					int position, long id) {
 				if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("blur")){
 					Intent intent = new Intent(ImageProccessignActivity.this, SmothingSubActivity.class);
+					startActivity(intent);
+				}else if(((String)parent.getItemAtPosition(position)).equalsIgnoreCase("change format")){
+					Intent intent = new Intent(ImageProccessignActivity.this, FormatChange.class);
 					startActivity(intent);
 				}
 				
