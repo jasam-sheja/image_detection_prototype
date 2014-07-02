@@ -10,6 +10,8 @@ import org.scribe.model.Verb;
 import com.vsn.auth.Authorizator;
 import com.vsn.auth.SessionManager;
 
+import android.R.layout;
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -27,7 +29,6 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	public static final String TAG = "VSN::MainActivity";
 	private static EditText etxtUsername, etxtPassword;
-	private static final String loginURL = "/login";
 	public SessionManager sessionManager;
 	public Authorizator authorizator;
 	public Token token;

@@ -13,84 +13,88 @@ import android.hardware.Camera.Size;
 import android.util.AttributeSet;
 import android.util.Log;
 
-public class CameraBridgeVeiwCustom extends JavaCameraView implements PictureCallback {
+public class CameraBridgeVeiwCustom extends JavaCameraView implements
+		PictureCallback {
 
-    private static final String TAG = "Sample::Tutorial3View";
-    private String mPictureFileName;
+	private static final String TAG = "Sample::Tutorial3View";
+	private String mPictureFileName;
 
-    public CameraBridgeVeiwCustom(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-    public CameraBridgeVeiwCustom(Activity active,int cam_id){
-    	super(active,cam_id);    	
-    }
+	public CameraBridgeVeiwCustom(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
 
-    public List<String> getEffectList() {
-        return mCamera.getParameters().getSupportedColorEffects();
-    }
+	public CameraBridgeVeiwCustom(Activity active, int cam_id) {
+		super(active, cam_id);
+	}
 
-    public boolean isEffectSupported() {
-        return (mCamera.getParameters().getColorEffect() != null);
-    }
+	public List<String> getEffectList() {
+		return mCamera.getParameters().getSupportedColorEffects();
+	}
 
-    public String getEffect() {
-        return mCamera.getParameters().getColorEffect();
-    }
+	public boolean isEffectSupported() {
+		return (mCamera.getParameters().getColorEffect() != null);
+	}
 
-    public void setEffect(String effect) {
-        Camera.Parameters params = mCamera.getParameters();
-        params.setColorEffect(effect);
-        mCamera.setParameters(params);
-    }
+	public String getEffect() {
+		return mCamera.getParameters().getColorEffect();
+	}
 
-    public List<Size> getResolutionList() {
-        return mCamera.getParameters().getSupportedPreviewSizes();
-    }
+	public void setEffect(String effect) {
+		Camera.Parameters params = mCamera.getParameters();
+		params.setColorEffect(effect);
+		mCamera.setParameters(params);
+	}
 
-    public void setResolution(Size resolution) {
-        disconnectCamera();
-        mMaxHeight = resolution.height;
-        mMaxWidth = resolution.width;
-        connectCamera(getWidth(), getHeight());
-    }
-    
-    public void setPictureSize(Size size){
-    	mCamera.getParameters().setPictureSize(size.width, size.height);
-    	
-    }
+	public List<Size> getResolutionList() {
+		return mCamera.getParameters().getSupportedPreviewSizes();
+	}
 
-    public Size getResolution() {
-        return mCamera.getParameters().getPreviewSize();
-    }
+	public void setResolution(Size resolution) {
+		disconnectCamera();
+		mMaxHeight = resolution.height;
+		mMaxWidth = resolution.width;
+		connectCamera(getWidth(), getHeight());
+	}
 
-    public void takePicture(final String fileName) {
-        Log.i(TAG, "Taking picture");
-        this.mPictureFileName = fileName;
-        // Postview and jpeg are sent in the same buffers if the queue is not empty when performing a capture.
-        // Clear up buffers to avoid mCamera.takePicture to be stuck because of a memory issue
-        mCamera.setPreviewCallback(null);
+	public void setPictureSize(Size size) {
+		mCamera.getParameters().setPictureSize(size.width, size.height);
 
-        // PictureCallback is implemented by the current class
-        mCamera.takePicture(null, null, this);
-    }
+	}
 
-    @Override
-    public void onPictureTaken(byte[] data, Camera camera) {
-        Log.i(TAG, "Saving a bitmap to file");
-        // The camera preview was automatically stopped. Start it again.
-        mCamera.startPreview();
-        mCamera.setPreviewCallback(this);
+	public Size getResolution() {
+		return mCamera.getParameters().getPreviewSize();
+	}
 
-        // Write the image in a file (in jpeg format)
-        try {
-            FileOutputStream fos = new FileOutputStream(mPictureFileName);
+	public void takePicture(final String fileName) {
+		Log.i(TAG, "Taking picture");
+		this.mPictureFileName = fileName;
+		// Postview and jpeg are sent in the same buffers if the queue is not
+		// empty when performing a capture.
+		// Clear up buffers to avoid mCamera.takePicture to be stuck because of
+		// a memory issue
+		mCamera.setPreviewCallback(null);
 
-            fos.write(data);
-            fos.close();
+		// PictureCallback is implemented by the current class
+		mCamera.takePicture(null, null, this);
+	}
 
-        } catch (java.io.IOException e) {
-            Log.e("PictureDemo", "Exception in photoCallback", e);
-        }
+	@Override
+	public void onPictureTaken(byte[] data, Camera camera) {
+		Log.i(TAG, "Saving a bitmap to file");
+		// The camera preview was automatically stopped. Start it again.
+		mCamera.startPreview();
+		mCamera.setPreviewCallback(this);
 
-    }
+		// Write the image in a file (in jpeg format)
+		try {
+			FileOutputStream fos = new FileOutputStream(mPictureFileName);
+
+			fos.write(data);
+			fos.close();
+
+		} catch (java.io.IOException e) {
+			Log.e("PictureDemo", "Exception in photoCallback", e);
+		}
+
+	}
 }

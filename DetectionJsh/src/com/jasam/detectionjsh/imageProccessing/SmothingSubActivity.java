@@ -28,123 +28,128 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class SmothingSubActivity extends Activity implements CvCameraViewListener2,OnTouchListener {
+public class SmothingSubActivity extends Activity implements
+		CvCameraViewListener2, OnTouchListener {
 
-	private static final String  TAG = "Sample::Detect::Activity";
+	private static final String TAG = "Sample::Detect::Activity";
 	private Settings settings;
-	
-	
+
 	private CameraBridgeVeiwCustom mOpenCvCameraView;
-	
-	private Mat	mRGB;
+
+	private Mat mRGB;
 	private Mat targetmRGB;
 	boolean smothing = true;
-	
+
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
-                    Log.i(TAG, "OpenCV loaded successfully");
+		@Override
+		public void onManagerConnected(int status) {
+			switch (status) {
+			case LoaderCallbackInterface.SUCCESS: {
+				Log.i(TAG, "OpenCV loaded successfully");
 
-                    /* Now enable camera view to start receiving frames */
-                    mOpenCvCameraView.enableView();
-                    
-                } break;
-                default:
-                {
-                    super.onManagerConnected(status);
-                } break;
-            }
-        }
-    };
-    
+				/* Now enable camera view to start receiving frames */
+				mOpenCvCameraView.enableView();
+
+			}
+				break;
+			default: {
+				super.onManagerConnected(status);
+			}
+				break;
+			}
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
-        Log.d(TAG, "Creating and seting view");
-        mOpenCvCameraView = (CameraBridgeVeiwCustom) new CameraBridgeVeiwCustom(this, -1);
-        setContentView(mOpenCvCameraView);
-        mOpenCvCameraView.setCvCameraViewListener(this);
-        mOpenCvCameraView.setOnTouchListener(this);
-        
-        settings = Settings.getInstance();
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+		Log.d(TAG, "Creating and seting view");
+		mOpenCvCameraView = (CameraBridgeVeiwCustom) new CameraBridgeVeiwCustom(
+				this, -1);
+		setContentView(mOpenCvCameraView);
+		mOpenCvCameraView.setCvCameraViewListener(this);
+		mOpenCvCameraView.setOnTouchListener(this);
+
+		settings = Settings.getInstance();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add("Settings");
-		
+
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if(item.getTitle().toString().equalsIgnoreCase("Settings")){
+		if (item.getTitle().toString().equalsIgnoreCase("Settings")) {
 			startActivity(new Intent(this, SettingsActivity.class));
 		}
 		return true;
 	}
-	
+
 	@Override
-    public void onPause()
-    {
-        super.onPause();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
+	public void onPause() {
+		super.onPause();
+		if (mOpenCvCameraView != null)
+			mOpenCvCameraView.disableView();
+	}
 
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
-    }
+	@Override
+	public void onResume() {
+		super.onResume();
+		OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this,
+				mLoaderCallback);
+	}
 
-    public void onDestroy() {
-        super.onDestroy();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
-    
-    @Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (mOpenCvCameraView != null)
+			mOpenCvCameraView.disableView();
+	}
+
+	@Override
 	public void onCameraViewStarted(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onCameraViewStopped() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-		if(smothing && settings.isBlurActive()){
+		if (smothing && settings.isBlurActive()) {
 			mRGB = inputFrame.rgba();
 			targetmRGB = new Mat(mRGB.rows(), mRGB.cols(), mRGB.type());
-			if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_HOMOGENEOUS)){
-				Imgproc.blur(mRGB, targetmRGB, new org.opencv.core.Size(settings.getBlurSize(),settings.getBlurSize()));
-			}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_GAUSSIAN)){
-				Imgproc.GaussianBlur(mRGB, targetmRGB, new org.opencv.core.Size(settings.getBlurSize(), settings.getBlurSize()),0,0);
-			}else if(settings.getBlurType().equalsIgnoreCase(Settings.BLUR_MEDIAN)){
+			if (settings.getBlurType().equalsIgnoreCase(
+					Settings.BLUR_HOMOGENEOUS)) {
+				Imgproc.blur(mRGB, targetmRGB, new org.opencv.core.Size(
+						settings.getBlurSize(), settings.getBlurSize()));
+			} else if (settings.getBlurType().equalsIgnoreCase(
+					Settings.BLUR_GAUSSIAN)) {
+				Imgproc.GaussianBlur(mRGB, targetmRGB,
+						new org.opencv.core.Size(settings.getBlurSize(),
+								settings.getBlurSize()), 0, 0);
+			} else if (settings.getBlurType().equalsIgnoreCase(
+					Settings.BLUR_MEDIAN)) {
 				Imgproc.medianBlur(mRGB, targetmRGB, settings.getBlurSize());
 			}
-//			else if(settings.getBlurType().equalsIgnoreCase("bilateral")){				
-//				Mat temp = new Mat(mRGB.rows(), mRGB.cols(), CvType.CV_8UC3);
-//				mRGB.convertTo(temp, CvType.CV_8UC3);
-//				targetmRGB = new Mat(temp.rows(), temp.cols(), temp.type());
-//				Imgproc.bilateralFilter(temp, targetmRGB, 5,10,2);
-//			}
-			
+			// else if(settings.getBlurType().equalsIgnoreCase("bilateral")){
+			// Mat temp = new Mat(mRGB.rows(), mRGB.cols(), CvType.CV_8UC3);
+			// mRGB.convertTo(temp, CvType.CV_8UC3);
+			// targetmRGB = new Mat(temp.rows(), temp.cols(), temp.type());
+			// Imgproc.bilateralFilter(temp, targetmRGB, 5,10,2);
+			// }
+
 			return targetmRGB;
-		}
-		else{
+		} else {
 			return inputFrame.rgba();
 		}
 	}
@@ -152,8 +157,10 @@ public class SmothingSubActivity extends Activity implements CvCameraViewListene
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		smothing = !smothing;
-		Toast.makeText(this, (smothing?"smothing":"not smothing") + CvType.CV_8UC3, Toast.LENGTH_SHORT).show();
-		
+		Toast.makeText(this,
+				(smothing ? "smothing" : "not smothing") + CvType.CV_8UC3,
+				Toast.LENGTH_SHORT).show();
+
 		return false;
 	}
 
